@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
-const open = require("open");
 const session = require("express-session");
 
 const app = express();
@@ -38,7 +37,7 @@ app.use(
 
             // Localhost testing mate false
             // HTTPS online deployment ma true karjo
-            secure: false,
+            secure: true,
 
             maxAge: 1000 * 60 * 60 * 4
         }
