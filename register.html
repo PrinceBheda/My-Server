@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Registration Form For Quiz</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:0;
+    font-family:sans-serif;
+    background:linear-gradient(135deg,#121212,#1f1f1f,#2b2b2b);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.login-box{
+    width:400px;
+    padding:40px;
+    background:rgba(0,0,0,0.5);
+    box-shadow:0 15px 25px rgba(0,0,0,0.6);
+    border-radius:10px;
+    box-sizing:border-box;
+}
+
+.login-box h2{
+    color:#fff;
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.user-box{
+    position:relative;
+}
+
+.user-box input{
+    width:100%;
+    padding:10px 0;
+    color:#fff;
+    margin-bottom:30px;
+    border:none;
+    border-bottom:1px solid #fff;
+    background:transparent;
+    outline:none;
+    box-sizing:border-box;
+}
+
+.user-box label{
+    position:absolute;
+    top:0;
+    left:0;
+    color:#fff;
+    transition:.5s;
+}
+
+.user-box input:focus ~ label,
+.user-box input:valid ~ label{
+    top:-20px;
+    color:#03e9f4;
+    font-size:12px;
+}
+
+
+/* =========================
+   NEON BUTTON
+========================= */
+
+.submit-btn{
+
+    position:relative;
+
+    display:inline-block;
+
+    width:100%;
+
+    padding:12px;
+
+    color:#03e9f4;
+
+    font-size:16px;
+
+    text-transform:uppercase;
+
+    overflow:hidden;
+
+    transition:.5s;
+
+    letter-spacing:4px;
+
+    background:transparent;
+
+    border:none;
+
+    cursor:pointer;
+
+}
+
+.submit-btn:hover{
+
+    background:#03e9f4;
+
+    color:#fff;
+
+    border-radius:5px;
+
+    box-shadow:
+        0 0 5px #03e9f4,
+        0 0 25px #03e9f4,
+        0 0 50px #03e9f4,
+        0 0 100px #03e9f4;
+
+}
+
+.submit-btn span{
+
+    position:absolute;
+
+    display:block;
+
+}
+
+.submit-btn span:nth-child(1){
+
+    top:0;
+    left:-100%;
+    width:100%;
+    height:2px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        #03e9f4
+    );
+
+    animation:btn1 1s linear infinite;
+
+}
+
+@keyframes btn1{
+
+    0%{
+        left:-100%;
+    }
+
+    50%,100%{
+        left:100%;
+    }
+
+}
+
+.submit-btn span:nth-child(2){
+
+    top:-100%;
+    right:0;
+
+    width:2px;
+    height:100%;
+
+    background:linear-gradient(
+        180deg,
+        transparent,
+        #03e9f4
+    );
+
+    animation:btn2 1s linear infinite;
+
+    animation-delay:.25s;
+
+}
+
+@keyframes btn2{
+
+    0%{
+        top:-100%;
+    }
+
+    50%,100%{
+        top:100%;
+    }
+
+}
+
+.submit-btn span:nth-child(3){
+
+    bottom:0;
+    right:-100%;
+
+    width:100%;
+    height:2px;
+
+    background:linear-gradient(
+        270deg,
+        transparent,
+        #03e9f4
+    );
+
+    animation:btn3 1s linear infinite;
+
+    animation-delay:.5s;
+
+}
+
+@keyframes btn3{
+
+    0%{
+        right:-100%;
+    }
+
+    50%,100%{
+        right:100%;
+    }
+
+}
+
+.submit-btn span:nth-child(4){
+
+    bottom:-100%;
+    left:0;
+
+    width:2px;
+    height:100%;
+
+    background:linear-gradient(
+        360deg,
+        transparent,
+        #03e9f4
+    );
+
+    animation:btn4 1s linear infinite;
+
+    animation-delay:.75s;
+
+}
+
+@keyframes btn4{
+
+    0%{
+        bottom:-100%;
+    }
+
+    50%,100%{
+        bottom:100%;
+    }
+
+}
+
+
+/* =========================
+   ADMIN PANEL
+========================= */
+
+.popup{
+
+    position:fixed;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:#001a33;
+
+    padding:20px;
+
+    border:2px solid gold;
+
+    width:350px;
+
+    max-height:450px;
+
+    overflow:auto;
+
+    color:white;
+
+    z-index:10000;
+
+    border-radius:8px;
+
+}
+
+.hidden{
+    display:none;
+}
+
+.remove-btn{
+
+    background:red;
+
+    color:white;
+
+    border:none;
+
+    padding:5px 10px;
+
+    cursor:pointer;
+
+    border-radius:4px;
+
+    margin-top:5px;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-box">
+
+    <h2>Registration</h2>
+
+
+    <form onsubmit="registerUser(event)">
+
+
+        <!-- NAME -->
+
+        <div class="user-box">
+
+            <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                autocomplete="name"
+            >
+
+            <label>Name</label>
+
+        </div>
+
+
+        <!-- STUDENT ID -->
+
+        <div class="user-box">
+
+            <input
+                type="text"
+                name="studentId"
+                id="studentId"
+                required
+                autocomplete="off"
+            >
+
+            <label>Student ID</label>
+
+        </div>
+
+
+        <!-- MOBILE -->
+
+        <div class="user-box">
+
+            <input
+                type="tel"
+                name="mobile"
+                id="mobile"
+                required
+                autocomplete="tel"
+            >
+
+            <label>Mobile Number</label>
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="user-box">
+
+            <input
+                type="email"
+                name="email"
+                id="email"
+                required
+                autocomplete="email"
+            >
+
+            <label>Email</label>
+
+        </div>
+
+
+        <!-- BUTTON -->
+
+        <button
+            type="submit"
+            class="submit-btn"
+            id="registerButton"
+        >
+
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+
+            REGISTER
+
+        </button>
+
+
+    </form>
+
+</div>
+
+
+
+<!-- =========================
+     ADMIN PANEL
+========================= -->
+
+<div
+    id="adminPanel"
+    class="popup hidden"
+></div>
+
+
+
+<script>
+
+
+/* =========================
+   REGISTER USER
+   SERVER BASED
+========================= */
+
+async function registerUser(e){
+
+    e.preventDefault();
+
+
+    /* =========================
+       GET FORM DATA
+    ========================= */
+
+    let name =
+        document
+        .getElementById("name")
+        .value
+        .trim();
+
+
+    let studentId =
+        document
+        .getElementById("studentId")
+        .value
+        .trim();
+
+
+    let mobile =
+        document
+        .getElementById("mobile")
+        .value
+        .trim();
+
+
+    let email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
+
+
+    /* =========================
+       BASIC VALIDATION
+    ========================= */
+
+    if(
+        !name ||
+        !studentId ||
+        !mobile ||
+        !email
+    ){
+
+        alert(
+            "Please fill all fields ❌"
+        );
+
+        return;
+
+    }
+
+
+    /* =========================
+       DISABLE BUTTON
+    ========================= */
+
+    let button =
+        document.getElementById(
+            "registerButton"
+        );
+
+
+    button.disabled = true;
+
+    button.style.opacity = "0.6";
+
+    button.innerText =
+        "REGISTERING...";
+
+
+    try{
+
+
+        /* =========================
+           SEND DATA TO SERVER
+        ========================= */
+
+        const response =
+            await fetch(
+                "/register",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        name:name,
+
+                        studentId:studentId,
+
+                        mobile:mobile,
+
+                        email:email
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        /* =========================
+           SERVER RESPONSE
+        ========================= */
+
+        if(!data.success){
+
+            alert(
+                data.message ||
+                "Registration Failed ❌"
+            );
+
+
+            button.disabled = false;
+
+            button.style.opacity = "1";
+
+            button.innerText =
+                "REGISTER";
+
+            return;
+
+        }
+
+
+        /* =========================
+           SAVE CURRENT PARTICIPANT
+           FOR QUIZ PAGE
+        ========================= */
+
+        sessionStorage.setItem(
+            "studentId",
+            data.studentId
+        );
+
+
+        sessionStorage.setItem(
+            "studentName",
+            name
+        );
+
+
+        /* =========================
+           ALSO SAVE PARTICIPANT INFO
+        ========================= */
+
+        sessionStorage.setItem(
+            "currentParticipant",
+            JSON.stringify({
+
+                studentId:data.studentId,
+
+                name:name,
+
+                mobile:mobile,
+
+                email:email
+
+            })
+        );
+
+
+        /* =========================
+           SUCCESS
+        ========================= */
+
+        alert(
+            "Registered Successfully ✅"
+        );
+
+
+        /* =========================
+           OPEN QUIZ
+        ========================= */
+
+        window.location.href =
+            "/Song Quiz Main.html";
+
+
+    }catch(error){
+
+        console.error(
+            "Registration Error:",
+            error
+        );
+
+
+        alert(
+            "Server connection failed ❌\n\nPlease make sure the server is running."
+        );
+
+
+        button.disabled = false;
+
+        button.style.opacity = "1";
+
+        button.innerText =
+            "REGISTER";
+
+    }
+
+}
+
+
+/* =========================
+   ADMIN PASSWORD
+========================= */
+
+/*
+   IMPORTANT:
+
+   Aa password server.js sathe
+   match karvu joie.
+
+   Jo server.js ma:
+   ADMIN_PASSWORD = "PRINCE1558"
+
+   hoy to ahi pan PRINCE1558
+   rakhvu.
+*/
+
+const ADMIN_PASSWORD =
+    "PRINCE1558";
+
+
+/* =========================
+   ADMIN PANEL OPEN
+   Z KEY
+========================= */
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        /* Input ma type karta Z
+           thi admin open na thay */
+
+        if(
+            e.target.tagName === "INPUT" ||
+            e.target.tagName === "TEXTAREA"
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            e.key.toLowerCase()
+            ===
+            "z"
+        ){
+
+            let password =
+                prompt(
+                    "Enter Admin Password 🔐"
+                );
+
+
+            if(
+                password
+                ===
+                ADMIN_PASSWORD
+            ){
+
+                showAdminPanel();
+
+            }else{
+
+                alert(
+                    "Wrong Password ❌"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================
+   SHOW ADMIN PANEL
+========================= */
+
+async function showAdminPanel(){
+
+    let panel =
+        document.getElementById(
+            "adminPanel"
+        );
+
+
+    panel.innerHTML =
+        "<h3 style='color:gold'>📋 Loading...</h3>";
+
+
+    panel.classList.remove(
+        "hidden"
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/admin-participants"
+            );
+
+
+        if(
+            response.status === 401
+        ){
+
+            panel.innerHTML =
+                "<p>Admin Login Required ❌</p>";
+
+            return;
+
+        }
+
+
+        const users =
+            await response.json();
+
+
+        panel.innerHTML =
+            "<h3 style='color:gold'>📋 Registered Participants</h3>";
+
+
+        if(
+            users.length === 0
+        ){
+
+            panel.innerHTML +=
+                "<p>No Users Yet</p>";
+
+        }else{
+
+            users.forEach(
+                (u,i) => {
+
+
+                    let status;
+
+
+                    if(
+                        u.quizStatus
+                        ===
+                        "Completed"
+                    ){
+
+                        status =
+                            `<span style="color:#00ff66">
+                                🟢 Quiz Completed
+                                <br>
+                                🏆 Score: ${u.score ?? 0}
+                            </span>`;
+
+                    }
+
+                    else if(
+                        u.quizStatus
+                        ===
+                        "Playing"
+                    ){
+
+                        status =
+                            `<span style="color:#ffd700">
+                                🟡 Quiz Playing
+                            </span>`;
+
+                    }
+
+                    else{
+
+                        status =
+                            `<span style="color:#aaa">
+                                ⚪ Quiz Not Joined
+                            </span>`;
+
+                    }
+
+
+                    panel.innerHTML += `
+
+                        <div style="
+                            padding:10px 0;
+                            border-bottom:
+                            1px solid
+                            rgba(255,255,255,.2);
+                        ">
+
+                            <b>
+                                ${String(i + 1)
+                                    .padStart(2,"0")}
+                                .
+                                ${escapeHTML(u.name)}
+                            </b>
+
+                            <br>
+
+                            🎓 Student ID:
+                            ${escapeHTML(u.studentId)}
+
+                            <br>
+
+                            📱 ${escapeHTML(u.mobile)}
+
+                            <br>
+
+                            📧 ${escapeHTML(u.email)}
+
+                            <br><br>
+
+                            📝 Registration:
+                            <span style="color:#00ff66">
+                                ✅ Registered
+                            </span>
+
+                            <br>
+
+                            🎮 Quiz Joined:
+                            ${
+                                u.quizJoined
+                                ?
+                                '<span style="color:#00ff66">✅ Yes</span>'
+                                :
+                                '<span style="color:#aaa">❌ No</span>'
+                            }
+
+                            <br>
+
+                            📊 Status:
+                            <br>
+
+                            ${status}
+
+                            <br>
+
+                            <button
+                                class="remove-btn"
+                                onclick="removeUser('${escapeJS(u.studentId)}')"
+                            >
+                                ❌ Remove
+                            </button>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+        }
+
+
+        panel.innerHTML += `
+
+            <br>
+
+            <button
+                onclick="closeAdminPanel()"
+                style="
+                    width:100%;
+                    padding:8px;
+                    cursor:pointer;
+                "
+            >
+                Close
+            </button>
+
+        `;
+
+
+    }catch(error){
+
+        console.error(
+            "Admin Error:",
+            error
+        );
+
+
+        panel.innerHTML =
+            "<p>Server connection failed ❌</p>";
+
+    }
+
+}
+
+
+/* =========================
+   REMOVE USER
+========================= */
+
+async function removeUser(studentId){
+
+    if(
+        !confirm(
+            "Remove this participant?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/delete-participant",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        studentId:studentId
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(data.success){
+
+            alert(
+                "Participant Removed ✅"
+            );
+
+            showAdminPanel();
+
+        }else{
+
+            alert(
+                data.message ||
+                "Remove Failed ❌"
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Server connection failed ❌"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   CLOSE ADMIN PANEL
+========================= */
+
+function closeAdminPanel(){
+
+    document
+        .getElementById("adminPanel")
+        .classList.add(
+            "hidden"
+        );
+
+}
+
+
+/* =========================
+   HTML ESCAPE
+========================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   JAVASCRIPT ESCAPE
+========================= */
+
+function escapeJS(value){
+
+    return String(value ?? "")
+        .replace(/\\/g,"\\\\")
+        .replace(/'/g,"\\'")
+        .replace(/"/g,'\\"');
+
+}
+
+</script>
+
+
+</body>
+
+</html>

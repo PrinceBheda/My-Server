@@ -1,0 +1,3510 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Guess The Song Practice Website</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0a1f44;
+    color:white;
+    text-align:center;
+}
+
+h1{
+    color:gold;
+}
+
+.container{
+    padding:20px;
+}
+
+button{
+    padding:10px 20px;
+    margin:10px;
+    background:gold;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+    width:220px;
+}
+
+button:hover{
+    background:#ffd700;
+}
+
+button:disabled{
+    cursor:not-allowed;
+    opacity:1;
+}
+
+input{
+    padding:8px;
+    margin:8px;
+    width:200px;
+    text-align:center;
+}
+
+#timer{
+    color:gold;
+    font-size:18px;
+}
+
+#posterTimer{
+    color:#ff3333;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.hidden{
+    display:none;
+}
+
+.answer-result{
+    font-size:20px;
+    font-weight:bold;
+    margin:15px auto;
+    line-height:1.6;
+}
+
+.correct-message{
+    color:#00ff66;
+}
+
+.wrong-message{
+    color:#ff4444;
+}
+
+.correct-answer{
+    color:gold;
+}
+
+.next-button{
+    background:gold;
+    color:#001a33;
+    font-size:17px;
+    font-weight:bold;
+    border-radius:8px;
+    width:220px;
+    margin-top:5px;
+}
+
+.next-button:hover{
+    background:#ffd700;
+    transform:scale(1.03);
+}
+
+.better-luck-popup{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#001a33;
+    color:gold;
+    border:3px solid gold;
+    border-radius:15px;
+    padding:25px 35px;
+    font-size:24px;
+    font-weight:bold;
+    text-align:center;
+    z-index:99999;
+    box-shadow:0 0 30px rgba(255,215,0,.7);
+    animation:popupShow .3s ease;
+    width:80%;
+    max-width:420px;
+    box-sizing:border-box;
+}
+
+@keyframes popupShow{
+    from{
+        transform:translate(-50%,-50%) scale(.6);
+        opacity:0;
+    }
+    to{
+        transform:translate(-50%,-50%) scale(1);
+        opacity:1;
+    }
+}
+
+.popup{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#001a33;
+    padding:20px;
+    border:2px solid gold;
+    width:320px;
+    max-height:500px;
+    overflow:auto;
+    z-index:10000;
+}
+
+.song-credit{
+    position:fixed;
+    bottom:5px;
+    right:10px;
+    font-size:10px;
+    color:gold;
+}
+
+.remove-btn{
+    background:#ff3333;
+    color:white;
+    border:none;
+    padding:3px 8px;
+    margin-left:8px;
+    border-radius:4px;
+    cursor:pointer;
+    font-size:11px;
+    width:auto;
+}
+
+.remove-btn:hover{
+    background:#cc0000;
+}
+
+#passwordPopup input{
+    padding:8px;
+    width:220px;
+    margin:10px 0;
+    text-align:center;
+}
+
+.warning-screen{
+    position:fixed;
+    inset:0;
+    background:#020b18;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.warning-screen.hidden{
+    display:none;
+}
+
+.warning-box{
+    width:90%;
+    max-width:600px;
+    padding:40px 25px;
+    text-align:center;
+    background:#001a33;
+    border:3px solid #ff3333;
+    border-radius:15px;
+    box-shadow:0 0 40px rgba(255,0,0,.6);
+    animation:warningPulse 1s infinite alternate;
+}
+
+.warning-icon{
+    font-size:60px;
+    animation:warningShake .5s infinite;
+}
+
+.warning-box h1{
+    color:#ff3333;
+    font-size:45px;
+    letter-spacing:5px;
+    margin:10px 0;
+}
+
+.warning-box h2{
+    color:gold;
+    margin:15px 0;
+}
+
+.warning-box p{
+    color:white;
+    font-size:18px;
+}
+
+.hard-mode{
+    color:#ff3333;
+    font-size:28px;
+    font-weight:bold;
+    margin:25px 0;
+    text-shadow:0 0 15px red;
+    animation:hardFlash .7s infinite alternate;
+}
+
+.warning-box button{
+    background:gold;
+    color:#001a33;
+    border:none;
+    padding:13px 25px;
+    border-radius:8px;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    width:220px;
+}
+
+.warning-box button:hover{
+    background:#ffd700;
+    transform:scale(1.05);
+}
+
+@keyframes warningPulse{
+    from{
+        box-shadow:0 0 20px rgba(255,0,0,.4);
+    }
+    to{
+        box-shadow:0 0 50px rgba(255,0,0,.9);
+    }
+}
+
+@keyframes warningShake{
+    0%{
+        transform:rotate(0deg);
+    }
+    25%{
+        transform:rotate(-8deg);
+    }
+    50%{
+        transform:rotate(8deg);
+    }
+    75%{
+        transform:rotate(-8deg);
+    }
+    100%{
+        transform:rotate(0deg);
+    }
+}
+
+@keyframes hardFlash{
+    from{
+        opacity:.5;
+    }
+    to{
+        opacity:1;
+    }
+}
+
+.movie-poster{
+    width:350px;
+    height:450px;
+    object-fit:cover;
+    border-radius:12px;
+    border:3px solid gold;
+    box-shadow:0 0 25px rgba(255,215,0,.5);
+    margin:20px auto;
+    display:block;
+}
+
+#posterOptions{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+#posterLevel{
+    min-height:100vh;
+    box-sizing:border-box;
+}
+
+#leaderboard{
+    margin:25px auto;
+    max-width:500px;
+}
+
+#warningLevel.red-alert{
+    animation:redWarningFlash 0.45s infinite alternate;
+}
+
+@keyframes redWarningFlash{
+    0%{
+        background:rgba(0,0,0,.95);
+        box-shadow:inset 0 0 0 rgba(255,0,0,0);
+    }
+
+    50%{
+        background:rgba(70,0,0,.95);
+        box-shadow:inset 0 0 80px rgba(255,0,0,.65);
+    }
+
+    100%{
+        background:rgba(150,0,0,.95);
+        box-shadow:inset 0 0 150px rgba(255,0,0,1);
+    }
+}
+
+.student-info{
+    color:gold;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.admin-status{
+    text-align:left;
+    margin:10px 0;
+    padding:10px;
+    border-bottom:1px solid rgba(255,255,255,.2);
+    font-size:14px;
+}
+
+.status-playing{
+    color:gold;
+}
+
+.status-completed{
+    color:#00ff66;
+}
+
+.status-not-joined{
+    color:#aaa;
+}
+
+
+.completion-lock{
+    position:fixed;
+    inset:0;
+    background:#020b18;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999999;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.completion-lock.hidden{
+    display:none;
+}
+
+.completion-box{
+    width:90%;
+    max-width:550px;
+    background:#001a33;
+    border:3px solid gold;
+    border-radius:18px;
+    padding:35px 25px;
+    box-sizing:border-box;
+    box-shadow:0 0 45px rgba(255,215,0,.5);
+}
+
+.completion-icon{
+    font-size:65px;
+    margin-bottom:10px;
+}
+
+.completion-box h1{
+    color:#00ff66;
+    margin:10px 0;
+}
+
+.completion-box h2{
+    color:gold;
+    margin:15px 0;
+}
+
+.completion-box p{
+    font-size:17px;
+    line-height:1.6;
+}
+
+.close-site-button{
+    background:#ff3333;
+    color:white;
+    border-radius:8px;
+    margin-top:15px;
+}
+
+.close-site-button:hover{
+    background:#cc0000;
+}
+
+body::before{
+    content:"";
+    background-image:url('Quiz Background.png');
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:500px;
+    mix-blend-mode:screen;
+    opacity:0.3;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    z-index:-1;
+    background-color:#000;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container" id="home">
+
+    <h1>🎵 Guess The Song</h1>
+
+    <div
+        id="studentInfo"
+        class="student-info">
+    </div>
+
+    <input
+        type="text"
+        id="username"
+        placeholder="Enter Name"
+    >
+
+    <br>
+
+    <input
+        type="number"
+        id="age"
+        placeholder="Enter Age"
+    >
+
+    <br>
+
+    <button onclick="startGame()">
+        Start Game
+    </button>
+
+</div>
+
+<div class="container hidden" id="game">
+
+    <h2>Listen Carefully... (15 Sec)</h2>
+
+    <audio id="audio"></audio>
+
+    <p id="timer"></p>
+
+    <div id="options"></div>
+
+    <div id="replayContainer"></div>
+
+    <div
+        id="answerMessage"
+        class="answer-result hidden">
+    </div>
+
+    <div
+        id="nextButtonContainer"
+        class="hidden">
+
+        <button
+            class="next-button"
+            onclick="nextSong()">
+
+            ➡️ NEXT
+
+        </button>
+
+    </div>
+
+    <p id="score"></p>
+
+    <p class="song-credit">
+        🎵 Music belongs to its respective copyright owners and is used here for quiz purposes only.
+    </p>
+
+</div>
+
+<div class="container hidden" id="result">
+
+    <h2 id="finalScore"></h2>
+
+    <div id="wrongAnswers"></div>
+
+    <div id="leaderboard">
+
+        <h2>🏆 Leaderboard</h2>
+
+        <div id="leaderboardList">
+            Loading...
+        </div>
+
+    </div>
+
+    <!-- Play Again intentionally removed -->
+    <p style="color:#00ff66;font-weight:bold;">
+        ✅ Quiz completed successfully.
+    </p>
+
+</div>
+
+<div id="warningLevel" class="warning-screen hidden">
+
+    <audio
+        id="warningSound"
+        src="Warning.mp3"
+        preload="auto">
+    </audio>
+
+    <div class="warning-box">
+
+        <div class="warning-icon">
+            ⚠️
+        </div>
+
+        <h1>WARNING</h1>
+
+        <h2>LEVEL 1 COMPLETED ✅</h2>
+
+        <p>🔓 LEVEL 2 UNLOCKED</p>
+
+        <div class="hard-mode">
+            🔥 VERY HARD MODE 🔥
+        </div>
+
+        <p>
+            The next level will be much harder...
+        </p>
+
+        <p>
+            ⚠️ Focus carefully. Every question matters.
+        </p>
+
+        <button onclick="startHardLevel()">
+            ENTER HARD LEVEL 🚀
+        </button>
+
+    </div>
+
+</div>
+
+<div id="posterLevel" class="container hidden">
+
+    <h1>🔥 HARD MODE 🔥</h1>
+
+    <h2>🎬 GUESS THE MOVIE</h2>
+
+    <p id="posterTimer"></p>
+
+    <img
+        id="moviePoster"
+        class="movie-poster"
+        src=""
+        alt="Movie Poster"
+    >
+
+    <div id="posterOptions"></div>
+
+    <div
+        id="posterAnswerMessage"
+        class="answer-result hidden">
+    </div>
+
+    <div
+        id="posterNextButtonContainer"
+        class="hidden">
+
+        <button
+            class="next-button"
+            onclick="nextPoster()">
+
+            ➡️ NEXT
+
+        </button>
+
+    </div>
+
+    <audio id="posterBgm"></audio>
+
+</div>
+
+<div
+    id="betterLuckPopup"
+    class="better-luck-popup"
+    style="display:none;">
+
+    Better Luck In Next Song 🎵
+
+</div>
+
+<div
+    id="betterLuckPosterPopup"
+    class="better-luck-popup"
+    style="display:none;">
+
+    Better Luck In Next Poster 🎬
+
+</div>
+
+<div id="adminPanel" class="popup hidden"></div>
+
+<div id="passwordPopup" class="popup hidden">
+
+    <h2 id="passwordTitle">
+        Admin Login 🔐
+    </h2>
+
+    <input
+        type="password"
+        id="adminPassword"
+        placeholder="Enter Password"
+    >
+
+    <button
+        id="passwordButton"
+        onclick="checkPassword()">
+
+        Login
+
+    </button>
+
+    <button onclick="closePasswordPopup()">
+        Cancel
+    </button>
+
+</div>
+
+<div
+    id="completionLock"
+    class="completion-lock hidden">
+
+    <div class="completion-box">
+
+        <div class="completion-icon">
+            🏆
+        </div>
+
+        <h1>
+            QUIZ COMPLETED!
+        </h1>
+
+        <h2>
+            ✅ Your attempt has been submitted
+        </h2>
+
+        <p>
+            Your score has been successfully recorded.
+        </p>
+
+        <p>
+            You cannot start the quiz again with this Student ID.
+        </p>
+
+        <p style="color:#aaa;font-size:14px;">
+            Thank you for participating 🎵
+        </p>
+
+        <button
+            class="close-site-button"
+            onclick="closeQuizPage()">
+
+            🔒 Close Quiz
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const TOTAL_QUESTIONS = 10;
+
+const studentId =
+    sessionStorage.getItem("studentId");
+
+const QUIZ_COMPLETED_KEY =
+    "guessTheSongQuizCompleted_" +
+    String(studentId || "unknown");
+
+function isQuizCompletedLocally(){
+
+    if(!studentId){
+        return false;
+    }
+
+    return localStorage.getItem(
+        QUIZ_COMPLETED_KEY
+    ) === "true";
+}
+
+function markQuizCompletedLocally(){
+
+    if(!studentId){
+        return;
+    }
+
+    localStorage.setItem(
+        QUIZ_COMPLETED_KEY,
+        "true"
+    );
+
+}
+
+
+function showCompletionLock(){
+
+    document.getElementById("home")
+        .classList.add("hidden");
+
+    document.getElementById("game")
+        .classList.add("hidden");
+
+    document.getElementById("warningLevel")
+        .classList.add("hidden");
+
+    document.getElementById("posterLevel")
+        .classList.add("hidden");
+
+    document.getElementById("result")
+        .classList.add("hidden");
+
+    document.getElementById("completionLock")
+        .classList.remove("hidden");
+
+}
+
+
+
+function closeQuizPage(){
+
+
+    try{
+
+        window.open("","_self");
+
+        window.close();
+
+    }
+    catch(error){
+
+        console.log(
+            "Browser did not allow automatic closing."
+        );
+
+    }
+
+}
+
+function showStudentInfo(){
+
+    const info =
+        document.getElementById(
+            "studentInfo"
+        );
+
+    if(studentId){
+
+        info.innerText =
+            "Student ID: " + studentId;
+
+    }
+    else{
+
+        info.innerText =
+            "⚠️ Student ID not found";
+
+    }
+
+}
+
+showStudentInfo();
+
+if(isQuizCompletedLocally()){
+
+    showCompletionLock();
+
+}
+
+function shuffleArray(array){
+
+    for(
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ){
+
+        let j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
+
+        [array[i], array[j]] =
+        [array[j], array[i]];
+
+    }
+
+    return array;
+
+}
+
+const songs = [
+
+{
+    file:"Sanedo.mp3",
+    options:[
+        "Apna Bana Le",
+        "Moti Veraana",
+        "Tum Hi Aana",
+        "Sanedo"
+    ],
+    answer:"Sanedo"
+},
+
+{
+    file:"JanamJanam.mp3",
+    options:[
+        "Brown Rang",
+        "Janam Janam",
+        "Desi Kalakaar",
+        "Jhoome Jo Pathan"
+    ],
+    answer:"Janam Janam"
+},
+
+{
+    file:"GORIRADHANEKALOKAAN.mp3",
+    options:[
+        "Gori Radha Ne Kalo Kaan",
+        "Bekhayali",
+        "Malang",
+        "Sanedo"
+    ],
+    answer:"Gori Radha Ne Kalo Kaan"
+},
+
+{
+    file:"Apnabanale.mp3",
+    options:[
+        "Blinding Lights",
+        "O Maahi",
+        "Apna Bana le",
+        "Janam Janam"
+    ],
+    answer:"Apna Bana le"
+},
+
+{
+    file:"Heeriye.mp3",
+    options:[
+        "Heeriye",
+        "Apna Bana Le",
+        "Someone You Loved",
+        "Gori Radha Ne Kalo Kaan"
+    ],
+    answer:"Heeriye"
+},
+
+{
+    file:"MotiVeraana.mp3",
+    options:[
+        "Pasoori",
+        "Heeriye",
+        "Manike",
+        "Moti Veraana"
+    ],
+    answer:"Moti Veraana"
+},
+
+{
+    file:"Dakla.mp3",
+    options:[
+        "O Maahi",
+        "Dakla",
+        "Basti Ka Hasti",
+        "Raashah"
+    ],
+    answer:"Dakla"
+},
+
+{
+    file:"Sarkari.mp3",
+    options:[
+        "Moti Veraana",
+        "Sanedo",
+        "Gori Radha Ne Kalo Kaan",
+        "Sarkari"
+    ],
+    answer:"Sarkari"
+},
+
+{
+    file:"BrownMunde.mp3",
+    options:[
+        "Lag Ja Gale",
+        "Brown Munde",
+        "Heeriye",
+        "Pyar Hua Ikrar Hua"
+    ],
+    answer:"Brown Munde"
+},
+
+{
+    file:"MaanMeriJaan.mp3",
+    options:[
+        "Desi Kalakar",
+        "Let It Be",
+        "With You",
+        "Maan Meri Jaan"
+    ],
+    answer:"Maan Meri Jaan"
+},
+
+{
+    file:"hawayein.mp3",
+    options:[
+        "Apna Bana Le",
+        "Hawayein",
+        "Desi Kalakar",
+        "Maan Meri Jaan"
+    ],
+    answer:"Hawayein"
+},
+
+{
+    file:"DekhaEkKhwab.mp3",
+    options:[
+        "Dekha Ek Khwab",
+        "Desi Kalakar",
+        "Ram Siya Ram",
+        "Maan Meri Jaan"
+    ],
+    answer:"Dekha Ek Khwab"
+},
+
+{
+    file:"LagJaGale.mp3",
+    options:[
+        "Hawayein",
+        "Dekha Ek Khwab",
+        "Ram Siya Ram",
+        "Lag Ja Gale"
+    ],
+    answer:"Lag Ja Gale"
+},
+
+{
+    file:"MeraJootaHaiJapani.mp3",
+    options:[
+        "Ram Siya Ram",
+        "Desi Kalakar",
+        "Mera Joota Hai Japani",
+        "Hawayein"
+    ],
+    answer:"Mera Joota Hai Japani"
+},
+
+{
+    file:"YehDosti.mp3",
+    options:[
+        "Desi Kalakar",
+        "Yeh Dosti",
+        "Ram Siya Ram",
+        "Hawayein"
+    ],
+    answer:"Yeh Dosti"
+},
+
+{
+    file:"PalPalDilKePaas.mp3",
+    options:[
+        "Gori Radha Ne Kalo Kaan",
+        "Mera Joota Hai Japani",
+        "Ram Siya Ram",
+        "Pal Pal Dil Ke Paas"
+    ],
+    answer:"Pal Pal Dil Ke Paas"
+},
+
+{
+    file:"Omeredilkechain.mp3",
+    options:[
+        "Pal Pal Dil Ke Paas",
+        "Yeh Dosti",
+        "O Mere Dil Ke Chain",
+        "Hawayein"
+    ],
+    answer:"O Mere Dil Ke Chain"
+},
+
+{
+    file:"EkDoTeen.mp3",
+    options:[
+        "Ek Do Teen",
+        "Hawayein",
+        "Ram Siya Ram",
+        "Dekha Ek Khwab"
+    ],
+    answer:"Ek Do Teen"
+},
+
+{
+    file:"RonaSherma.mp3",
+    options:[
+        "Desi Kalakar",
+        "Rona Sherma",
+        "Ek Do Teen",
+        "Hawayein"
+    ],
+    answer:"Rona Sherma"
+},
+
+{
+    file:"VaagyoReDhol.mp3",
+    options:[
+        "Gori Radha Ne Kalo Kaan",
+        "Desi Kalakar",
+        "O Mere Dil Ke Chain",
+        "Vaagyo Re Dhol"
+    ],
+    answer:"Vaagyo Re Dhol"
+},
+
+{
+    file:"NavlakhayLobadiyu.mp3",
+    options:[
+        "Desi Kalakar",
+        "Rona Sherma",
+        "Navlakhay Lobadiyu",
+        "Hawayein"
+    ],
+    answer:"Navlakhay Lobadiyu",
+    replay:true
+},
+
+{
+    file:"RamSiyaRam.mp3",
+    options:[
+        "Navlakhay Lobadiyu",
+        "Ram Siya Ram",
+        "Ek Do Teen",
+        "Hawayein"
+    ],
+    answer:"Ram Siya Ram"
+}
+
+];
+
+const moviePosters = [
+
+{
+    image:"ANIMAL Movie Poster.jpg",
+    bgm:"Animal Movie BGM.mp3",
+    bgmStart:1,
+    options:[
+        "Animal",
+        "Kabir Singh",
+        "Jawan",
+        "Pathaan"
+    ],
+    answer:"Animal"
+},
+
+{
+    image:"BRAMAYUGAM Movie Poster.jpg",
+    bgm:"Bramayugam Movie BGM.mp4",
+    bgmStart:1,
+    options:[
+        "Pathaan",
+        "War",
+        "Bramayugam",
+        "Tumbbad"
+    ],
+    answer:"Bramayugam"
+},
+
+{
+    image:"KAITHI Movie Poster.jpg",
+    bgm:"Kaithi Movie BGM.mp3",
+    bgmStart:3,
+    options:[
+        "Tamasha",
+        "Kaithi",
+        "Kahaani",
+        "Kabir Singh"
+    ],
+    answer:"Kaithi"
+},
+
+{
+    image:"KANTARA Movie Poster.jpg",
+    bgm:"Kantara Movie BGM.mp4",
+    bgmStart:63,
+    options:[
+        "Drishyam",
+        "Pushpa",
+        "Brahmastra",
+        "Kantara"
+    ],
+    answer:"Kantara"
+},
+
+{
+    image:"KGF Movie Poster.jpg",
+    bgm:"Kgf Movie BGM.mp3",
+    bgmStart:1,
+    options:[
+        "RRR",
+        "KGF",
+        "Badla",
+        "Haider"
+    ],
+    answer:"KGF"
+},
+
+{
+    image:"KURUP Movie Poster.jpg",
+    bgm:"Kurup Movie BGM.mp3",
+    bgmStart:0,
+    options:[
+        "3 Idiots",
+        "Fighter",
+        "Chhaava",
+        "Kurup"
+    ],
+    answer:"Kurup"
+},
+
+{
+    image:"LEO Movie Poster.jpg",
+    bgm:"Leo Movie BGM.mp3",
+    bgmStart:9,
+    options:[
+        "Article 15",
+        "Andhadhun",
+        "Leo",
+        "Stree"
+    ],
+    answer:"Leo"
+},
+
+{
+    image:"Lucky Bhaskar Movie Poster.jpg",
+    bgm:"Lucky Bhaskar Movie BGM.mp3",
+    bgmStart:0,
+    options:[
+        "Lucky Bhaskar",
+        "Rockstar",
+        "Shershaah",
+        "Dangal"
+    ],
+    answer:"Lucky Bhaskar"
+},
+
+{
+    image:"MAHARAJA Movie Poster.jpg",
+    bgm:"Maharaja Movie BGM.mp3",
+    bgmStart:15,
+    options:[
+        "Sita Raman",
+        "Maharaja",
+        "Adipurush",
+        "Bhool Bhulaiyaa"
+    ],
+    answer:"Maharaja"
+},
+
+{
+    image:"SALAR Movie Poster.jpg",
+    bgm:"Salaar Movie BGM.mp3",
+    bgmStart:0,
+    options:[
+        "Vikram Vedha",
+        "Talaash",
+        "Gully Boy",
+        "Salar"
+    ],
+    answer:"Salar"
+}
+
+];
+
+let current = 0;
+let score = 0;
+let timeLeft = 15;
+let timer;
+let previewTimeout;
+
+let currentPoster = 0;
+let posterScore = 0;
+let posterTimer;
+let posterTimeLeft = 20;
+let bgmStopTimeout;
+
+let wrongAnswers = [];
+
+let correctSound =
+    new Audio("Correct.mp3");
+
+let wrongSound =
+    new Audio("Incorrect.mp3");
+
+
+function playCorrectSound(){
+
+    correctSound.pause();
+    correctSound.currentTime = 0;
+
+    correctSound.play()
+        .catch(() => {});
+
+}
+
+
+function playWrongSound(){
+
+    wrongSound.pause();
+    wrongSound.currentTime = 0;
+
+    wrongSound.play()
+        .catch(() => {});
+
+}
+
+function showBetterLuckPopup(){
+
+    const popup =
+        document.getElementById(
+            "betterLuckPopup"
+        );
+
+    popup.style.display = "block";
+
+    setTimeout(() => {
+
+        popup.style.display = "none";
+
+    },1800);
+
+}
+
+function showBetterLuckPosterPopup(){
+
+    const popup =
+        document.getElementById(
+            "betterLuckPosterPopup"
+        );
+
+    popup.style.display = "block";
+
+    setTimeout(() => {
+
+        popup.style.display = "none";
+
+    },1800);
+
+}
+
+async function joinQuiz(){
+
+    if(!studentId){
+
+        alert(
+            "Student ID not found.\nPlease register first."
+        );
+
+        window.location.href =
+            "/register.html";
+
+        return false;
+    }
+
+
+    try{
+
+        const response =
+            await fetch("/quiz-join",{
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+
+                    studentId:
+                        studentId
+
+                })
+
+            });
+
+
+        const data =
+            await response.json();
+
+        if(!data.success){
+
+            if(
+                data.quizCompleted === true ||
+                data.quizStatus === "Completed" ||
+                (
+                    data.message &&
+                    data.message
+                        .toLowerCase()
+                        .includes("completed")
+                )
+            ){
+
+                markQuizCompletedLocally();
+
+                showCompletionLock();
+
+                return false;
+
+            }
+
+
+            alert(
+                data.message ||
+                "Unable to join quiz."
+            );
+
+            return false;
+        }
+
+
+        console.log(
+            "✅ Quiz Joined:",
+            data.participant
+        );
+
+
+        return true;
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ Quiz Join Error:",
+            error
+        );
+
+
+        alert(
+            "Server connection error.\nPlease try again."
+        );
+
+
+        return false;
+
+    }
+
+}
+
+async function startGame(){
+
+
+    if(isQuizCompletedLocally()){
+
+        showCompletionLock();
+
+        return;
+
+    }
+
+
+    let name =
+        document.getElementById(
+            "username"
+        ).value.trim();
+
+
+    let age =
+        document.getElementById(
+            "age"
+        ).value;
+
+
+    if(
+        name === "" ||
+        age === ""
+    ){
+
+        alert(
+            "Please enter Name and Age"
+        );
+
+        return;
+
+    }
+
+
+    if(!studentId){
+
+        alert(
+            "Student ID not found.\nPlease register first."
+        );
+
+        window.location.href =
+            "/register.html";
+
+        return;
+
+    }
+
+
+
+    const joined =
+        await joinQuiz();
+
+
+    if(!joined){
+
+        return;
+
+    }
+
+
+
+    document.getElementById("home")
+        .classList.add("hidden");
+
+
+    document.getElementById("game")
+        .classList.remove("hidden");
+
+
+    current = 0;
+
+    score = 0;
+
+    wrongAnswers = [];
+
+
+    clearInterval(timer);
+
+    clearTimeout(previewTimeout);
+
+
+    shuffleArray(songs);
+
+
+    loadSong();
+
+}
+
+function loadSong(){
+
+    if(current >= TOTAL_QUESTIONS){
+
+        endGame();
+
+        return;
+
+    }
+
+
+    let song =
+        songs[current];
+
+
+    let audio =
+        document.getElementById(
+            "audio"
+        );
+
+
+    clearInterval(timer);
+
+    clearTimeout(previewTimeout);
+
+
+    audio.pause();
+
+    audio.src =
+        song.file;
+
+    audio.currentTime = 0;
+
+
+    let answerMessage =
+        document.getElementById(
+            "answerMessage"
+        );
+
+
+    answerMessage.innerHTML = "";
+
+    answerMessage.classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "nextButtonContainer"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    let replayContainer =
+        document.getElementById(
+            "replayContainer"
+        );
+
+
+    replayContainer.innerHTML = "";
+
+
+    if(song.replay === true){
+
+        let replayBtn =
+            document.createElement(
+                "button"
+            );
+
+
+        replayBtn.innerText =
+            "🔁 Replay";
+
+
+        replayBtn.onclick = () => {
+
+            audio.currentTime = 0;
+
+            audio.play()
+                .catch(() => {});
+
+        };
+
+
+        replayContainer.appendChild(
+            replayBtn
+        );
+
+    }
+
+
+    audio.play()
+        .catch(() => {});
+
+
+    previewTimeout =
+        setTimeout(() => {
+
+            audio.pause();
+
+        },15000);
+
+
+    document.getElementById(
+        "score"
+    ).innerText =
+        "Score: " + score;
+
+
+    let optDiv =
+        document.getElementById(
+            "options"
+        );
+
+
+    optDiv.innerHTML = "";
+
+
+    let shuffledOptions =
+        shuffleArray([
+            ...song.options
+        ]);
+
+
+    shuffledOptions.forEach(option => {
+
+        let btn =
+            document.createElement(
+                "button"
+            );
+
+
+        btn.innerText =
+            option;
+
+
+        btn.onclick = () => {
+
+            clearInterval(timer);
+
+            clearTimeout(
+                previewTimeout
+            );
+
+
+            audio.pause();
+
+
+            optDiv
+                .querySelectorAll("button")
+                .forEach(b => {
+
+                    b.disabled = true;
+
+                });
+
+
+            if(
+                option ===
+                song.answer
+            ){
+
+                score += 10;
+
+                playCorrectSound();
+
+
+                answerMessage.innerHTML = `
+
+                    <div class="correct-message">
+
+                        ✅ Your answer is correct!
+
+                    </div>
+
+                `;
+
+            }
+
+            else{
+
+                playWrongSound();
+
+
+                wrongAnswers.push({
+
+                    question:
+                        current + 1,
+
+                    answer:
+                        song.answer,
+
+                    selected:
+                        option
+
+                });
+
+
+                answerMessage.innerHTML = `
+
+                    <div class="wrong-message">
+
+                        ❌ Your answer is wrong!
+
+                    </div>
+
+                    <div class="correct-answer">
+
+                        Correct Answer:
+                        ${song.answer}
+
+                    </div>
+
+                `;
+
+
+                showBetterLuckPopup();
+
+            }
+
+
+            answerMessage.classList.remove(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "score"
+            ).innerText =
+                "Score: " + score;
+
+
+            document.getElementById(
+                "nextButtonContainer"
+            ).classList.remove(
+                "hidden"
+            );
+
+        };
+
+
+        optDiv.appendChild(btn);
+
+    });
+
+
+    timeLeft = 15;
+
+
+    startTimer();
+
+}
+
+
+function nextSong(){
+
+    current++;
+
+    loadSong();
+
+}
+
+
+function startTimer(){
+
+    clearInterval(timer);
+
+
+    document.getElementById(
+        "timer"
+    ).innerText =
+        "Time Left: " + timeLeft;
+
+
+    timer =
+        setInterval(() => {
+
+            timeLeft--;
+
+
+            document.getElementById(
+                "timer"
+            ).innerText =
+                "Time Left: " +
+                timeLeft;
+
+
+            if(timeLeft <= 0){
+
+                clearInterval(timer);
+
+                clearTimeout(
+                    previewTimeout
+                );
+
+
+                let audio =
+                    document.getElementById(
+                        "audio"
+                    );
+
+
+                audio.pause();
+
+
+                wrongAnswers.push({
+
+                    question:
+                        current + 1,
+
+                    answer:
+                        songs[current].answer,
+
+                    selected:
+                        "Time Out"
+
+                });
+
+
+                playWrongSound();
+
+
+                let answerMessage =
+                    document.getElementById(
+                        "answerMessage"
+                    );
+
+
+                answerMessage.innerHTML = `
+
+                    <div class="wrong-message">
+
+                        ⏰ Time's up!<br>
+
+                        ❌ Your answer is wrong!
+
+                    </div>
+
+                    <div class="correct-answer">
+
+                        Correct Answer:
+                        ${songs[current].answer}
+
+                    </div>
+
+                `;
+
+
+                answerMessage.classList.remove(
+                    "hidden"
+                );
+
+
+                showBetterLuckPopup();
+
+
+                document.getElementById(
+                    "options"
+                )
+                .querySelectorAll("button")
+                .forEach(btn => {
+
+                    btn.disabled = true;
+
+                });
+
+
+                document.getElementById(
+                    "nextButtonContainer"
+                ).classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        },1000);
+
+}
+
+
+function endGame(){
+
+    clearInterval(timer);
+
+    clearTimeout(
+        previewTimeout
+    );
+
+
+    let audio =
+        document.getElementById(
+            "audio"
+        );
+
+
+    audio.pause();
+
+    audio.currentTime = 0;
+
+
+    document.getElementById("game")
+        .classList.add("hidden");
+
+
+    document.getElementById(
+        "warningLevel"
+    )
+    .classList.remove("hidden");
+
+
+    startWarningEffect();
+
+}
+
+
+function startHardLevel(){
+
+    stopWarningEffect();
+
+
+    document.getElementById(
+        "warningLevel"
+    )
+    .classList.add("hidden");
+
+
+    document.getElementById(
+        "posterLevel"
+    )
+    .classList.remove("hidden");
+
+
+    currentPoster = 0;
+
+    posterScore = 0;
+
+
+    clearInterval(posterTimer);
+
+    clearTimeout(bgmStopTimeout);
+
+
+    shuffleArray(moviePosters);
+
+
+    loadPoster();
+
+}
+
+
+function loadPoster(){
+
+    clearInterval(posterTimer);
+
+    clearTimeout(bgmStopTimeout);
+
+
+    let bgm =
+        document.getElementById(
+            "posterBgm"
+        );
+
+
+    bgm.pause();
+
+    bgm.currentTime = 0;
+
+
+    let posterMessage =
+        document.getElementById(
+            "posterAnswerMessage"
+        );
+
+
+    posterMessage.innerHTML = "";
+
+    posterMessage.classList.add(
+        "hidden"
+    );
+
+
+    document.getElementById(
+        "posterNextButtonContainer"
+    )
+    .classList.add("hidden");
+
+
+    if(
+        currentPoster >=
+        moviePosters.length
+    ){
+
+        finishPosterLevel();
+
+        return;
+
+    }
+
+
+    let poster =
+        moviePosters[currentPoster];
+
+
+    let img =
+        document.getElementById(
+            "moviePoster"
+        );
+
+
+    img.src =
+        poster.image;
+
+
+    bgm.src =
+        poster.bgm;
+
+
+    bgm.load();
+
+
+    bgm.onloadedmetadata =
+        function(){
+
+            let startPoint =
+                Number(
+                    poster.bgmStart
+                ) || 0;
+
+
+            if(
+                startPoint >=
+                bgm.duration
+            ){
+
+                startPoint = 0;
+
+            }
+
+
+            bgm.currentTime =
+                startPoint;
+
+
+            bgm.play()
+                .catch(() => {
+
+                    console.log(
+                        "BGM autoplay was blocked by the browser."
+                    );
+
+                });
+
+
+            bgmStopTimeout =
+                setTimeout(() => {
+
+                    bgm.pause();
+
+                    bgm.currentTime = 0;
+
+                },20000);
+
+        };
+
+
+    let options =
+        document.getElementById(
+            "posterOptions"
+        );
+
+
+    options.innerHTML = "";
+
+
+    let shuffledPosterOptions =
+        shuffleArray([
+            ...poster.options
+        ]);
+
+
+    shuffledPosterOptions.forEach(option => {
+
+        let btn =
+            document.createElement(
+                "button"
+            );
+
+
+        btn.innerText =
+            option;
+
+
+        btn.onclick =
+            function(){
+
+                clearInterval(
+                    posterTimer
+                );
+
+                clearTimeout(
+                    bgmStopTimeout
+                );
+
+
+                bgm.pause();
+
+                bgm.currentTime = 0;
+
+
+                options
+                    .querySelectorAll("button")
+                    .forEach(b => {
+
+                        b.disabled = true;
+
+                    });
+
+
+                if(
+                    option ===
+                    poster.answer
+                ){
+
+                    posterScore += 10;
+
+                    playCorrectSound();
+
+
+                    posterMessage.innerHTML = `
+
+                        <div class="correct-message">
+
+                            ✅ Your answer is correct!
+
+                        </div>
+
+                    `;
+
+                }
+
+                else{
+
+                    playWrongSound();
+
+                    showBetterLuckPosterPopup();
+
+
+                    posterMessage.innerHTML = `
+
+                        <div class="wrong-message">
+
+                            ❌ Your answer is wrong!
+
+                        </div>
+
+                        <div class="correct-answer">
+
+                            Correct Answer:
+                            ${poster.answer}
+
+                        </div>
+
+                    `;
+
+                }
+
+
+                posterMessage.classList.remove(
+                    "hidden"
+                );
+
+
+                document.getElementById(
+                    "posterNextButtonContainer"
+                )
+                .classList.remove(
+                    "hidden"
+                );
+
+            };
+
+
+        options.appendChild(btn);
+
+    });
+
+
+    posterTimeLeft = 20;
+
+
+    document.getElementById(
+        "posterTimer"
+    ).innerText =
+        "⏱️ Time Left: " +
+        posterTimeLeft;
+
+
+    posterTimer =
+        setInterval(() => {
+
+            posterTimeLeft--;
+
+
+            document.getElementById(
+                "posterTimer"
+            ).innerText =
+                "⏱️ Time Left: " +
+                posterTimeLeft;
+
+
+            if(
+                posterTimeLeft <= 0
+            ){
+
+                clearInterval(
+                    posterTimer
+                );
+
+                clearTimeout(
+                    bgmStopTimeout
+                );
+
+
+                bgm.pause();
+
+                bgm.currentTime = 0;
+
+
+                playWrongSound();
+
+                showBetterLuckPosterPopup();
+
+
+                posterMessage.innerHTML = `
+
+                    <div class="wrong-message">
+
+                        ⏰ Time's up!<br>
+
+                        ❌ Your answer is wrong!
+
+                    </div>
+
+                    <div class="correct-answer">
+
+                        Correct Answer:
+                        ${poster.answer}
+
+                    </div>
+
+                `;
+
+
+                posterMessage.classList.remove(
+                    "hidden"
+                );
+
+
+                options
+                    .querySelectorAll("button")
+                    .forEach(btn => {
+
+                        btn.disabled = true;
+
+                    });
+
+
+                document.getElementById(
+                    "posterNextButtonContainer"
+                )
+                .classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        },1000);
+
+}
+
+
+
+function nextPoster(){
+
+    currentPoster++;
+
+    loadPoster();
+
+}
+
+
+
+async function saveFinalScore(finalScore){
+
+    if(!studentId){
+
+        console.error(
+            "Student ID missing. Score cannot be saved."
+        );
+
+        return false;
+
+    }
+
+
+    let age =
+        document.getElementById(
+            "age"
+        ).value;
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/save-score",
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        studentId:
+                            studentId,
+
+                        score:
+                            finalScore,
+
+                        age:
+                            age
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(data.success){
+
+            console.log(
+                "✅ Score saved:",
+                data.participant
+            );
+
+
+            markQuizCompletedLocally();
+
+
+            return true;
+
+        }
+
+
+        else{
+
+            console.error(
+                "❌ Score save failed:",
+                data.message
+            );
+
+
+            return false;
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "❌ Save Score Error:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+
+async function finishPosterLevel(){
+
+    clearInterval(posterTimer);
+
+    clearTimeout(bgmStopTimeout);
+
+
+    let bgm =
+        document.getElementById(
+            "posterBgm"
+        );
+
+
+    bgm.pause();
+
+    bgm.currentTime = 0;
+
+
+    let totalScore =
+        score + posterScore;
+
+
+
+    const saved =
+        await saveFinalScore(
+            totalScore
+        );
+
+
+
+    if(saved){
+
+        markQuizCompletedLocally();
+
+    }
+
+    document.getElementById(
+        "posterLevel"
+    )
+    .classList.add("hidden");
+
+
+    document.getElementById(
+        "result"
+    )
+    .classList.remove("hidden");
+
+
+    document.getElementById(
+        "finalScore"
+    ).innerText =
+        "🏆 Your Final Score: " +
+        totalScore;
+
+
+    showWrongAnswers();
+
+
+    showLeaderboard();
+
+
+    let maxScore =
+        (TOTAL_QUESTIONS * 10) +
+        (moviePosters.length * 10);
+
+
+    if(totalScore === maxScore){
+
+        confetti({
+
+            particleCount:300,
+
+            spread:120
+
+        });
+
+    }
+
+
+
+}
+
+
+function showWrongAnswers(){
+
+    let box =
+        document.getElementById(
+            "wrongAnswers"
+        );
+
+
+    if(wrongAnswers.length === 0){
+
+        box.innerHTML =
+            "<p>🎉 Perfect! No wrong answers.</p>";
+
+        return;
+
+    }
+
+
+    let html =
+        "<h3>❌ Wrong Answers</h3>";
+
+
+    wrongAnswers.forEach(item => {
+
+        html += `
+
+            <p>
+
+                Question ${item.question}:
+
+                Correct = ${item.answer}
+
+                | Your Answer = ${item.selected}
+
+            </p>
+
+        `;
+
+    });
+
+
+    box.innerHTML =
+        html;
+
+}
+
+
+0
+async function showLeaderboard(){
+
+    let list =
+        document.getElementById(
+            "leaderboardList"
+        );
+
+
+    list.innerHTML =
+        "Loading leaderboard...";
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/leaderboard"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(
+            !Array.isArray(data) ||
+            data.length === 0
+        ){
+
+            list.innerHTML =
+                "<p>No Scores Yet</p>";
+
+            return;
+
+        }
+
+
+        let html = "";
+
+
+        data.slice(0,10)
+            .forEach((p,i) => {
+
+                html += `
+
+                    <p>
+
+                        🏅 ${i + 1}.
+                        ${p.name} -
+
+                        <strong>
+                            ${p.score}
+                        </strong>
+
+                    </p>
+
+                `;
+
+            });
+
+
+        list.innerHTML =
+            html;
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Leaderboard Error:",
+            error
+        );
+
+
+        list.innerHTML =
+            "<p>Unable to load leaderboard.</p>";
+
+    }
+
+}
+
+
+const FIRST_ADMIN_PASSWORD =
+    "KING1558";
+
+const SECOND_ADMIN_PASSWORD =
+    "PRINCE1558";
+
+
+function openPasswordPopup(){
+
+    document.getElementById(
+        "passwordPopup"
+    )
+    .classList.remove("hidden");
+
+
+    setTimeout(() => {
+
+        document.getElementById(
+            "adminPassword"
+        ).focus();
+
+    },50);
+
+}
+
+
+function closePasswordPopup(){
+
+    document.getElementById(
+        "passwordPopup"
+    )
+    .classList.add("hidden");
+
+
+    document.getElementById(
+        "adminPassword"
+    ).value = "";
+
+}
+
+
+function checkPassword(){
+
+    let password =
+        document.getElementById(
+            "adminPassword"
+        ).value;
+
+
+    if(
+        password ===
+        FIRST_ADMIN_PASSWORD
+    ){
+
+        document.getElementById(
+            "adminPassword"
+        ).value = "";
+
+
+        document.getElementById(
+            "passwordTitle"
+        ).innerText =
+            "Enter Second Password 🔐";
+
+
+        document.getElementById(
+            "adminPassword"
+        ).placeholder =
+            "Enter Password";
+
+
+        document.getElementById(
+            "adminPassword"
+        ).focus();
+
+
+        document.getElementById(
+            "passwordButton"
+        ).innerText =
+            "Unlock Admin Panel";
+
+
+        document.getElementById(
+            "passwordPopup"
+        )
+        .setAttribute(
+            "data-second-password",
+            "true"
+        );
+
+
+        return;
+
+    }
+
+
+    if(
+
+        document.getElementById(
+            "passwordPopup"
+        )
+        .getAttribute(
+            "data-second-password"
+        ) === "true"
+
+        &&
+
+        password ===
+        SECOND_ADMIN_PASSWORD
+
+    ){
+
+        closePasswordPopup();
+
+
+        document.getElementById(
+            "passwordPopup"
+        )
+        .removeAttribute(
+            "data-second-password"
+        );
+
+
+        document.getElementById(
+            "passwordTitle"
+        ).innerText =
+            "Admin Login 🔐";
+
+
+        document.getElementById(
+            "adminPassword"
+        ).placeholder =
+            "Enter Password";
+
+
+        document.getElementById(
+            "passwordButton"
+        ).innerText =
+            "Login";
+
+
+        loginAdminServer();
+
+
+        return;
+
+    }
+
+
+    alert(
+        "Wrong Password ❌"
+    );
+
+}
+
+
+async function loginAdminServer(){
+
+    try{
+
+        const response =
+            await fetch(
+                "/admin-login",
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        password:
+                            SECOND_ADMIN_PASSWORD
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!data.success){
+
+            alert(
+                data.message ||
+                "Admin Login Failed"
+            );
+
+            return;
+
+        }
+
+
+        showAdminPanel();
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Admin Login Error:",
+            error
+        );
+
+
+        alert(
+            "Server connection error."
+        );
+
+    }
+
+}
+
+
+async function showAdminPanel(){
+
+    let panel =
+        document.getElementById(
+            "adminPanel"
+        );
+
+
+    panel.innerHTML = `
+
+        <h3 style="color:gold">
+
+            🛠 Admin Panel
+
+        </h3>
+
+        <p>
+
+            Loading participant data...
+
+        </p>
+
+    `;
+
+
+    panel.classList.remove(
+        "hidden"
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/admin-participants"
+            );
+
+
+        if(response.status === 401){
+
+            panel.innerHTML = `
+
+                <h3 style="color:red">
+
+                    Admin Login Required
+
+                </h3>
+
+                <button onclick="closePopup()">
+
+                    Close
+
+                </button>
+
+            `;
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        panel.innerHTML = `
+
+            <h3 style="color:gold">
+
+                🛠 Admin Panel
+
+            </h3>
+
+            <p>
+
+                👥 Total Registered:
+
+                <strong>
+                    ${data.length}
+                </strong>
+
+            </p>
+
+        `;
+
+
+        if(data.length === 0){
+
+            panel.innerHTML +=
+                "<p>No Data Yet</p>";
+
+        }
+
+        else{
+
+            data.forEach((p) => {
+
+                let statusClass =
+                    "status-not-joined";
+
+
+                if(
+                    p.quizStatus ===
+                    "Playing"
+                ){
+
+                    statusClass =
+                        "status-playing";
+
+                }
+
+
+                if(
+                    p.quizStatus ===
+                    "Completed"
+                ){
+
+                    statusClass =
+                        "status-completed";
+
+                }
+
+
+                panel.innerHTML += `
+
+                    <div class="admin-status">
+
+                        <div>
+
+                            <strong>
+
+                                ${String(
+                                    p.number
+                                ).padStart(2,"0")}
+
+                                .
+
+                                ${escapeHTML(
+                                    p.name
+                                )}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            Student ID:
+
+                            ${escapeHTML(
+                                p.studentId
+                            )}
+
+                        </div>
+
+
+                        <div>
+
+                            Registration:
+
+                            ${
+                                p.registration
+                                ? "✅ Done"
+                                : "❌ Not Done"
+                            }
+
+                        </div>
+
+
+                        <div>
+
+                            Quiz Joined:
+
+                            ${
+                                p.quizJoined
+                                ? "✅ Yes"
+                                : "❌ No"
+                            }
+
+                        </div>
+
+
+                        <div
+                            class="${statusClass}">
+
+                            Quiz Status:
+
+                            <strong>
+
+                                ${
+                                    p.quizStatus ||
+                                    "Not Joined"
+                                }
+
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            Score:
+
+                            ${
+                                p.score === null
+                                ? "-"
+                                : p.score
+                            }
+
+                        </div>
+
+
+                        <button
+                            class="remove-btn"
+                            onclick="
+                                deleteParticipant(
+                                    '${escapeJS(
+                                        p.studentId
+                                    )}'
+                                )
+                            ">
+
+                            ❌ Remove
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            });
+
+        }
+
+
+        panel.innerHTML += `
+
+            <br>
+
+            <button onclick="closePopup()">
+
+                Close
+
+            </button>
+
+        `;
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Admin Panel Error:",
+            error
+        );
+
+
+        panel.innerHTML = `
+
+            <h3 style="color:red">
+
+                ❌ Unable to load data
+
+            </h3>
+
+            <button onclick="closePopup()">
+
+                Close
+
+            </button>
+
+        `;
+
+    }
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value)
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeJS(value){
+
+    return String(value)
+
+        .replace(/\\/g,"\\\\")
+        .replace(/'/g,"\\'")
+        .replace(/"/g,'\\"')
+        .replace(/\n/g,"\\n")
+        .replace(/\r/g,"\\r");
+
+}
+
+
+async function deleteParticipant(studentId){
+
+    if(!confirm(
+        "Remove this participant?"
+    )){
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/delete-participant",
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        studentId:
+                            studentId
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(data.success){
+
+            alert(
+                "Participant Removed ✅"
+            );
+
+
+            showAdminPanel();
+
+        }
+
+        else{
+
+            alert(
+                data.message ||
+                "Unable to remove participant."
+            );
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Delete Error:",
+            error
+        );
+
+
+        alert(
+            "Server connection error."
+        );
+
+    }
+
+}
+
+
+
+function closePopup(){
+
+    document.getElementById(
+        "adminPanel"
+    )
+    .classList.add("hidden");
+
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(
+            e.target.tagName === "INPUT" ||
+            e.target.tagName === "TEXTAREA"
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            e.key.toLowerCase() === "z"
+        ){
+
+            openPasswordPopup();
+
+        }
+
+    }
+);
+
+
+let threeFingerStartX = 0;
+
+let threeFingerStartY = 0;
+
+let threeFingerSwipe = false;
+
+
+document.addEventListener(
+    "touchstart",
+    function(e){
+
+        if(e.touches.length !== 3){
+
+            threeFingerSwipe = false;
+
+            return;
+
+        }
+
+
+        threeFingerStartX =
+            e.touches[0].clientX;
+
+
+        threeFingerStartY =
+            e.touches[0].clientY;
+
+
+        threeFingerSwipe = true;
+
+    },
+    {
+        passive:true
+    }
+);
+
+
+document.addEventListener(
+    "touchend",
+    function(e){
+
+        if(!threeFingerSwipe){
+
+            return;
+
+        }
+
+
+        const endX =
+            e.changedTouches[0].clientX;
+
+
+        const endY =
+            e.changedTouches[0].clientY;
+
+
+        const distanceX =
+            threeFingerStartX - endX;
+
+
+        const distanceY =
+            Math.abs(
+                threeFingerStartY -
+                endY
+            );
+
+
+        if(
+            distanceX > 150 &&
+            distanceY < 120
+        ){
+
+            openPasswordPopup();
+
+        }
+
+
+        threeFingerSwipe = false;
+
+        threeFingerStartX = 0;
+
+        threeFingerStartY = 0;
+
+    },
+    {
+        passive:true
+    }
+);
+
+
+
+document.addEventListener(
+    "keyup",
+    function(e){
+
+        if(
+            e.key ===
+            "PrintScreen"
+        ){
+
+            document.body.style.visibility =
+                "hidden";
+
+
+            setTimeout(() => {
+
+                document.body.style.visibility =
+                    "visible";
+
+            },1200);
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(
+            e.key ===
+            "PrintScreen"
+        ){
+
+            e.preventDefault();
+
+        }
+
+
+        if(
+            e.shiftKey &&
+            e.metaKey &&
+            e.key.toLowerCase() === "s"
+        ){
+
+            e.preventDefault();
+
+        }
+
+
+        if(
+            e.ctrlKey &&
+            e.shiftKey &&
+            e.key.toLowerCase() === "s"
+        ){
+
+            e.preventDefault();
+
+        }
+
+    }
+);
+
+
+
+document.addEventListener(
+    "contextmenu",
+    function(e){
+
+        e.preventDefault();
+
+    }
+);
+
+
+document.addEventListener(
+    "dragstart",
+    function(e){
+
+        e.preventDefault();
+
+    }
+);
+
+
+
+document.addEventListener(
+    "selectstart",
+    function(e){
+
+        e.preventDefault();
+
+    }
+);
+
+
+function startWarningEffect(){
+
+    const warningScreen =
+        document.getElementById(
+            "warningLevel"
+        );
+
+
+    const warningSound =
+        document.getElementById(
+            "warningSound"
+        );
+
+
+    warningScreen.classList.add(
+        "red-alert"
+    );
+
+
+    warningSound.pause();
+
+    warningSound.currentTime = 0;
+
+    warningSound.volume = 0.7;
+
+
+    warningSound.play()
+
+        .then(() => {
+
+            console.log(
+                "✅ Warning MP3 playing"
+            );
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "❌ Warning MP3 could not play:",
+                error
+            );
+
+        });
+
+}
+
+
+function stopWarningEffect(){
+
+    const warningScreen =
+        document.getElementById(
+            "warningLevel"
+        );
+
+
+    const warningSound =
+        document.getElementById(
+            "warningSound"
+        );
+
+
+    warningScreen.classList.remove(
+        "red-alert"
+    );
+
+
+    warningSound.pause();
+
+    warningSound.currentTime = 0;
+
+}
+
+</script>
+
+</body>
+
+</html>
