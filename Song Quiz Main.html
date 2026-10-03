@@ -442,6 +442,86 @@ body::before{
     background-color:#000;
 }
 
+
+.access-control {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+.access-control button {
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: gold;
+    color: #001a33;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#singleUserAccessPopup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+.popup-box {
+    width: 350px;
+    max-width: 90%;
+    padding: 25px;
+    background: #001a33;
+    border: 2px solid gold;
+    border-radius: 15px;
+    text-align: center;
+}
+
+#accessUserSelect {
+    width: 90%;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.feedback-box{
+background:#001a33;
+border:2px solid gold;
+padding:20px;
+border-radius:15px;
+width:80%;
+max-width:400px;
+margin:30px auto;
+color:white;
+}
+
+.feedback-box input,
+.feedback-box textarea,
+.feedback-box select{
+width:90%;
+padding:12px;
+margin:10px;
+border-radius:8px;
+border:none;
+}
+
+.feedback-box button{
+background:gold;
+padding:12px 25px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
 </style>
 
 </head>
@@ -533,8 +613,26 @@ body::before{
         </div>
 
     </div>
+    <div class="feedback-box">
+<h2>💬 Give Your Feedback</h2>
 
-    <!-- Play Again intentionally removed -->
+<input type="text" placeholder="Your Name (Optional)">
+
+<select>
+  <option>Rate Your Experience</option>
+  <option>⭐⭐⭐⭐⭐ Excellent</option>
+  <option>⭐⭐⭐⭐ Good</option>
+  <option>⭐⭐⭐ Average</option>
+  <option>⭐⭐ Need Improvement</option>
+</select>
+
+<textarea placeholder="Your Suggestions..."></textarea>
+
+<button>Submit Feedback</button>
+
+</div>
+
+    
     <p style="color:#00ff66;font-weight:bold;">
         ✅ Quiz completed successfully.
     </p>
@@ -2597,11 +2695,9 @@ async function showLeaderboard(){
 }
 
 
-const FIRST_ADMIN_PASSWORD =
-    "KING1558";
+const FIRST_ADMIN_PASSWORD ="KING1558";
 
-const SECOND_ADMIN_PASSWORD =
-    "PRINCE1558";
+const SECOND_ADMIN_PASSWORD ="PRINCE1558";
 
 
 function openPasswordPopup(){
@@ -3045,6 +3141,42 @@ async function showAdminPanel(){
                         </button>
 
                     </div>
+
+                    <div class="access-control">
+
+            <button onclick="grantAllUsersAccess()">
+                🔓 Give Access To All Users
+            </button>
+
+                <button onclick="openSingleUserAccess()">
+                👤 Select User & Give Access
+            </button>
+
+        </div>
+
+        <div id="singleUserAccessPopup" class="popup hidden">
+
+        <div class="popup-box">
+
+            <h2>👤 Select User</h2>
+
+                <select id="accessUserSelect">
+                    <option value="">Select a user</option>
+                </select>
+
+                    <br><br>
+
+            <button onclick="giveSelectedUserAccess()">
+                    🔓 Give Access
+            </button>
+
+            <button onclick="closeSingleUserAccess()">
+                    ❌ Cancel
+            </button>
+
+            </div>
+
+        </div>
 
                 `;
 
@@ -3502,6 +3634,182 @@ function stopWarningEffect(){
     warningSound.currentTime = 0;
 
 }
+
+
+async function grantAllUsersAccess() {
+
+    const confirmAccess = confirm(
+        "Are you sure you want to give access to ALL users?"
+    );
+
+    if (!confirmAccess) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/grant-all-access", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            alert("✅ Access granted to ALL users.");
+
+        } else {
+
+            alert(
+                data.message ||
+                "❌ Could not grant access."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("❌ Server connection error.");
+    }
+}
+
+
+async function openSingleUserAccess() {
+
+    const popup =
+        document.getElementById(
+            "singleUserAccessPopup"
+        );
+
+    const select =
+        document.getElementById(
+            "accessUserSelect"
+        );
+
+    select.innerHTML =
+        '<option value="">Loading users...</option>';
+
+    popup.classList.remove("hidden");
+
+    try {
+
+        const response = await fetch(
+            "/admin-participants"
+        );
+
+        const data = await response.json();
+
+        select.innerHTML =
+            '<option value="">Select a user</option>';
+
+        // Yahan data ek array hai, isliye direct check karenge
+        if (!Array.isArray(data) || data.length === 0) {
+
+            select.innerHTML =
+                '<option value="">No users found</option>';
+
+            return;
+        }
+
+        data.forEach(user => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = user.studentId;
+
+            option.textContent =
+                `${user.name} — ${user.studentId}`;
+
+            select.appendChild(option);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        select.innerHTML =
+            '<option value="">Server error</option>';
+    }
+}
+
+
+
+async function giveSelectedUserAccess() {
+
+    const select =
+        document.getElementById(
+            "accessUserSelect"
+        );
+
+    const studentId = select.value;
+
+    if (!studentId) {
+
+        alert("Please select a user.");
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/grant-single-access",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    studentId: studentId
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            alert(
+                "✅ Access granted to selected user."
+            );
+
+            closeSingleUserAccess();
+
+        } else {
+
+            alert(
+                data.message ||
+                "❌ Could not grant access."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("❌ Server connection error.");
+    }
+}
+
+
+
+function closeSingleUserAccess() {
+
+    document
+        .getElementById(
+            "singleUserAccessPopup"
+        )
+        .classList.add("hidden");
+}
+
 
 </script>
 
