@@ -4,9 +4,8 @@ const path = require("path");
 const session = require("express-session");
 
 const app = express();
-app.set('trust proxy', 1); 
+app.set('trust proxy', 1); // 👈 Yeh line add karni hai
 const PORT = process.env.PORT || 3000;
-
 
 
 const ADMIN_PASSWORD = "PRINCE1558";
@@ -759,8 +758,54 @@ app.post(
     }
 );
 
+app.post("/grant-all-access", requireAdmin, (req, res) => {
+    users.forEach(user => {
+        user.quizCompleted = false;
+        user.quizJoined = false;
+        user.quizStatus = "Not Joined";
+    });
+
+    console.log("ACCESS GRANTED TO ALL USERS");
+
+    res.json({
+        success: true,
+        message: "Access granted to all users."
+    });
+});
 
 
+app.post("/grant-single-access", requireAdmin, (req, res) => {
+    const { studentId } = req.body;
+
+    if (!studentId) {
+        return res.json({
+            success: false,
+            message: "Student ID is required."
+        });
+    }
+
+    const user = users.find(
+        u => String(u.studentId).trim().toLowerCase() === String(studentId).trim().toLowerCase()
+    );
+
+    if (!user) {
+        return res.json({
+            success: false,
+            message: "Student not found."
+        });
+    }
+
+    user.quizCompleted = false;
+    user.quizJoined = false;
+    user.quizStatus = "Not Joined";
+
+    console.log("ACCESS GRANTED:", studentId);
+
+    res.json({
+        success: true,
+        message: "Access granted successfully."
+    });
+});
 
 app.use(
     (req, res) => {
@@ -771,9 +816,6 @@ app.use(
 
     }
 );
-
-
-
 
 app.listen(
     PORT,
